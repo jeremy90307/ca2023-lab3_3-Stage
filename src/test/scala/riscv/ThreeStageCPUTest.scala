@@ -70,5 +70,17 @@ class ThreeStageCPUTest extends AnyFlatSpec with ChiselScalatestTester {
       c.io.mem_debug_read_data.expect(3.U)
     }
   }
+  it should "calculate the scale" in {
+    test(new TestTopModule("hw2.asmbin",ImplementationType.ThreeStage)).withAnnotations(TestAnnotations.annos) { c =>
+      for (i <- 1 to 50) {
+        c.clock.step(1000)
+        c.io.mem_debug_read_address.poke((i * 4).U)
+      }
+
+      c.io.regs_debug_read_address.poke(16.U) //a6
+      c.clock.step()
+      c.io.regs_debug_read_data.expect(0x41d00000.U)
+    }
+  }
 }
 
